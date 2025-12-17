@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Srisin Family - Hello Paak and Poom!">
+    <meta name="author" content="Srisin Family">
+    <title>Srisin Family | Hello Paak & Poom! 👋</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-house-heart-fill me-2"></i>Srisin Family
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#videos">
+                            <i class="bi bi-play-circle me-1"></i>Videos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#content">
+                            <i class="bi bi-journal-text me-1"></i>Stories
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div class="hero-content">
+                        <h1 class="display-2 fw-bold text-gradient mb-4">
+                            Hello Paak and Poom! 👋
+                        </h1>
+                        <p class="lead mb-4">
+                            Welcome to our family corner on the internet! 
+                            <br>A special place for precious memories and moments.
+                        </p>
+                        <div class="hero-emoji mb-4">
+                            <span class="emoji-bounce">👶</span>
+                            <span class="emoji-bounce delay-1">💕</span>
+                            <span class="emoji-bounce delay-2">👶</span>
+                        </div>
+                        <a href="#videos" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                            <i class="bi bi-play-circle me-2"></i>Watch Videos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" fill="#ffffff"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section id="videos" class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">
+                    <i class="bi bi-camera-video text-primary me-2"></i>Family Videos
+                </h2>
+                <p class="text-muted">Our precious moments captured on video</p>
+            </div>
+            
+            <!-- Video Player Container -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="video-player-wrapper">
+                        <!-- Video Player -->
+                        <div class="video-container">
+                            <video id="mainVideo" class="video-element" poster="assets/video-poster.jpg">
+                                <source src="videos/20251216_AppForKhunPoo.mov" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            
+                            <!-- Play Button Overlay -->
+                            <div class="play-overlay" id="playOverlay">
+                                <button class="play-btn-large" id="playBtnLarge">
+                                    <i class="bi bi-play-fill"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Video Controls -->
+                            <div class="video-controls" id="videoControls">
+                                <!-- Progress Bar -->
+                                <div class="progress-container">
+                                    <div class="progress-bar-wrapper" id="progressBar">
+                                        <div class="progress-buffered" id="buffered"></div>
+                                        <div class="progress-filled" id="progress"></div>
+                                        <div class="progress-thumb" id="progressThumb"></div>
+                                    </div>
+                                    <span class="time-display">
+                                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                                    </span>
+                                </div>
+                                
+                                <!-- Control Buttons -->
+                                <div class="controls-row">
+                                    <div class="controls-left">
+                                        <button class="control-btn" id="playPauseBtn" title="Play/Pause">
+                                            <i class="bi bi-play-fill" id="playPauseIcon"></i>
+                                        </button>
+                                        <button class="control-btn" id="skipBackBtn" title="Skip Back 10s">
+                                            <i class="bi bi-skip-backward-fill"></i>
+                                        </button>
+                                        <button class="control-btn" id="skipForwardBtn" title="Skip Forward 10s">
+                                            <i class="bi bi-skip-forward-fill"></i>
+                                        </button>
+                                        <div class="volume-control">
+                                            <button class="control-btn" id="muteBtn" title="Mute/Unmute">
+                                                <i class="bi bi-volume-up-fill" id="volumeIcon"></i>
+                                            </button>
+                                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="controls-right">
+                                        <button class="control-btn" id="pipBtn" title="Picture in Picture">
+                                            <i class="bi bi-pip"></i>
+                                        </button>
+                                        <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
+                                            <i class="bi bi-fullscreen" id="fullscreenIcon"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Video Info -->
+                        <div class="video-info mt-3">
+                            <h5 class="video-title">
+                                <i class="bi bi-film me-2 text-primary"></i>App for Khun Poo - December 16, 2025
+                            </h5>
+                            <p class="video-description text-muted">
+                                A special video for our beloved family. Click play to watch!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Playlist (for future videos) -->
+            <div class="row mt-5" id="videoPlaylist">
+                <div class="col-12">
+                    <h5 class="mb-3">
+                        <i class="bi bi-collection-play me-2"></i>More Videos
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="video-thumbnail active" data-video="videos/20251216_AppForKhunPoo.mov">
+                                <div class="thumbnail-placeholder">
+                                    <i class="bi bi-play-circle"></i>
+                                </div>
+                                <div class="thumbnail-info">
+                                    <span class="thumbnail-title">App for Khun Poo</span>
+                                    <span class="thumbnail-date">Dec 16, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add more video thumbnails here -->
+                        <div class="col-md-4 col-sm-6">
+                            <div class="video-thumbnail placeholder-video">
+                                <div class="thumbnail-placeholder">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <div class="thumbnail-info">
+                                    <span class="thumbnail-title">More videos coming soon...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Section -->
+    <section id="content" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">
+                    <i class="bi bi-journal-heart text-primary me-2"></i>Family Stories
+                </h2>
+                <p class="text-muted">Notes, memories, and special moments</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Content Card 1 -->
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <span class="card-date">
+                                <i class="bi bi-calendar3 me-1"></i>December 2025
+                            </span>
+                            <span class="card-tag">
+                                <i class="bi bi-heart-fill me-1"></i>Family
+                            </span>
+                        </div>
+                        <h4 class="card-title">Welcome to Srisin.com!</h4>
+                        <p class="card-text">
+                            This is a special place where we share memories, videos, and stories 
+                            about our family. Hello to Paak and Poom - our wonderful nephews! 
+                            This website is made with love for you both. 💕
+                        </p>
+                        <p class="card-text">
+                            <!-- Add your content here -->
+                            Feel free to explore the videos section and check back often 
+                            for new updates and memories!
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Content Card 2 - Placeholder for more content -->
+                <div class="col-lg-6">
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <span class="card-date">
+                                <i class="bi bi-calendar3 me-1"></i>Coming Soon
+                            </span>
+                            <span class="card-tag tag-note">
+                                <i class="bi bi-pencil me-1"></i>Notes
+                            </span>
+                        </div>
+                        <h4 class="card-title">More Stories Coming...</h4>
+                        <p class="card-text">
+                            <!-- Add your content here -->
+                            This space is reserved for more family stories, updates, 
+                            and precious memories to share with Paak and Poom as they grow up.
+                        </p>
+                        <div class="placeholder-content">
+                            <i class="bi bi-journal-plus"></i>
+                            <span>Your story here...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Card 3 - Another placeholder -->
+                <div class="col-12">
+                    <div class="content-card wide-card">
+                        <div class="card-header-custom">
+                            <span class="card-date">
+                                <i class="bi bi-star-fill me-1"></i>Special Section
+                            </span>
+                        </div>
+                        <h4 class="card-title">
+                            <i class="bi bi-emoji-heart-eyes me-2"></i>A Message for Paak & Poom
+                        </h4>
+                        <div class="message-box">
+                            <p class="lead">
+                                "สวัสดีหลานรัก! 👋"
+                            </p>
+                            <p>
+                                <!-- Add your personal message here -->
+                                This website is your special corner on the internet. 
+                                When you grow up, you can look back at all these videos 
+                                and memories. We love you both very much! 
+                            </p>
+                            <p class="signature">
+                                — With love from your family 💕
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">
+                        <i class="bi bi-house-heart me-2"></i>
+                        <strong>Srisin Family</strong> &copy; 2025
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 text-muted">
+                        Made with <i class="bi bi-heart-fill text-danger"></i> for Paak & Poom
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Video Player JS -->
+    <script src="js/player.js"></script>
+</body>
+</html>
