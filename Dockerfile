@@ -16,8 +16,10 @@ RUN rm -rf ./*
 COPY index.html .
 COPY css/ ./css/
 COPY js/ ./js/
-COPY videos/ ./videos/
 COPY assets/ ./assets/
+
+# Create videos directory (videos uploaded separately via persistent storage)
+RUN mkdir -p ./videos
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

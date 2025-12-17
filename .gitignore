@@ -44,6 +44,9 @@ temp/
 *.bak
 *.backup
 
-# Large video files (optional - uncomment if needed)
-# videos/*.mov
-# videos/*.mp4
+# Video files - upload separately to CapRover
+videos/*.mov
+videos/*.mp4
+videos/*.webm
+videos/*.avi
+videos/*.mkv
