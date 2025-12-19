@@ -48,10 +48,10 @@ jobs:
           # Add server to known hosts
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           
-          # Sync videos with rsync (only uploads changed files)
+          # Sync videos with scp (alternative to rsync)
           if [ -d "videos" ] && [ "$(ls -A videos)" ]; then
-            rsync -avz --checksum -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-              videos/ \
+            scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -r \
+              videos/* \
               ubuntu@${{ secrets.SERVER_IP }}:/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--videos/_data/
             echo "✓ Videos synced successfully"
           else
@@ -61,10 +61,10 @@ jobs:
       - name: Sync assets to persistent storage
         continue-on-error: true
         run: |
-          # Sync assets with rsync (only uploads changed files)
+          # Sync assets with scp (alternative to rsync)
           if [ -d "assets" ] && [ "$(ls -A assets)" ]; then
-            rsync -avz --checksum -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-              assets/ \
+            scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -r \
+              assets/* \
               ubuntu@${{ secrets.SERVER_IP }}:/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--assets/_data/
             echo "✓ Assets synced successfully"
           else
