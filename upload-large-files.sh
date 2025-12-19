@@ -51,6 +51,20 @@ echo "  Server: $SSH_USER@$SERVER_IP"
 echo "  App: $APP_NAME"
 echo ""
 
+# Create remote directories with proper permissions
+echo -e "${YELLOW}Setting up remote directories...${NC}"
+ssh "${SSH_USER}@${SERVER_IP}" \
+  "sudo mkdir -p ${VIDEOS_REMOTE} ${ASSETS_REMOTE} && \
+   sudo chown -R ${SSH_USER}:${SSH_USER} /var/lib/docker/volumes/captain--${APP_NAME}--videos/ /var/lib/docker/volumes/captain--${APP_NAME}--assets/"
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}  ✓ Remote directories created and permissions set${NC}"
+else
+    echo -e "${RED}  ✗ Failed to create remote directories${NC}"
+    exit 1
+fi
+echo ""
+
 # Function to upload with rsync
 upload_rsync() {
     local source=$1
@@ -64,12 +78,18 @@ upload_rsync() {
         return 1
     fi
     
+    if [ -z "$(ls -A $source)" ]; then
+        echo -e "${YELLOW}  ⊘ Directory $source is empty, skipping${NC}"
+        return 0
+    fi
+    
     # rsync options:
     # -a: archive mode (preserves permissions, times, etc.)
     # -v: verbose
     # -z: compress during transfer
     # -P: show progress and keep partial files
     # --checksum: use checksums to detect changes (more thorough than timestamp)
+    echo -e "${YELLOW}  → Using rsync with checksum verification (only changed files)${NC}"
     rsync -avzP --checksum "$source" "${SSH_USER}@${SERVER_IP}:${destination}"
     
     if [ $? -eq 0 ]; then
