@@ -185,15 +185,19 @@ def upload_file():
     
     file = request.files['file']
     
-    if file.filename == '':
+    if not file.filename or file.filename == '':
         return jsonify({'success': False, 'message': 'No file selected'}), 400
     
-    if file and allowed_file(file.filename):
+    if not allowed_file(file.filename):
+        return jsonify({'success': False, 'message': 'File type not allowed'}), 400
+    
+    if file:
         filename = secure_filename(file.filename)
-        # Add timestamp to avoid conflicts
+        # Add timestamp and random suffix to avoid conflicts
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        random_suffix = secrets.token_hex(4)
         name, ext = os.path.splitext(filename)
-        filename = f"{name}_{timestamp}{ext}"
+        filename = f"{name}_{timestamp}_{random_suffix}{ext}"
         
         filepath = UPLOAD_DIR / filename
         file.save(filepath)
@@ -217,8 +221,16 @@ def upload_file():
     return jsonify({'success': False, 'message': 'File type not allowed'}), 400
 
 if __name__ == '__main__':
+    # Get configuration from environment with safe defaults
+    debug_mode = os.getenv('DEBUG', 'True').lower() == 'true'
+    host = os.getenv('HOST', '127.0.0.1')  # Default to localhost for security
+    port = int(os.getenv('PORT', '5000'))
+    
     print("🚀 Srisin Admin Server")
-    print("📡 Server running at http://localhost:5000")
-    print("🔐 Admin panel at http://localhost:5000/admin")
+    print(f"📡 Server running at http://{host}:{port}")
+    print(f"🔐 Admin panel at http://{host}:{port}/admin")
+    if debug_mode:
+        print("⚠️  Running in DEBUG mode - not suitable for production!")
     print("\n⌨️  Press Ctrl+C to stop\n")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    
+    app.run(host=host, port=port, debug=debug_mode)

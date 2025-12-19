@@ -83,6 +83,15 @@ Published content automatically appears in the "Family Stories" section of the m
 - 30-minute session timeout
 - Never commit `.env` file to git
 - All uploads stored in `uploads/` directory (excluded from git)
+- XSS protection with content escaping
+- File upload validation and secure naming
+
+**Production Recommendations:**
+- Set `DEBUG=False` in `.env` for production
+- Use `HOST=127.0.0.1` (localhost only) or configure firewall rules
+- Always set a strong `SECRET_KEY` (minimum 32 characters)
+- Get a free TinyMCE API key at https://www.tiny.cloud/get-tiny/
+- Consider using a production WSGI server (e.g., gunicorn, uwsgi)
 
 ## Troubleshooting
 
