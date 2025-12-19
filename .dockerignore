@@ -12,6 +12,7 @@ __pycache__
 
 # Large files - synced separately via persistent storage
 videos/
+*.mov
 
 # Logs and temporary files
 *.log
