@@ -16,10 +16,10 @@ RUN rm -rf ./*
 COPY index.html .
 COPY css/ ./css/
 COPY js/ ./js/
-COPY assets/ ./assets/
 
-# Create videos directory (videos uploaded separately via persistent storage)
-RUN mkdir -p ./videos
+# Create directories for persistent storage (mounted separately)
+# Assets (APK files) and videos are synced via GitHub Actions to persistent volumes
+RUN mkdir -p ./videos ./assets
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

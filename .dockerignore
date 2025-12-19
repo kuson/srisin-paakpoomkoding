@@ -1,10 +1,20 @@
+# Python virtual environment
 .venv
 __pycache__
 *.pyc
 *.pyo
 *.pyd
+
+# System files
 .DS_Store
 .git
 .gitignore
-*.mov
-*.apk
+
+# Large files - synced separately via persistent storage
+videos/
+assets/
+
+# Logs and temporary files
+*.log
+nohup.out
+*.tar
