@@ -13,12 +13,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Create deployment tarball
+        run: |
+          tar -czf deploy.tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='videos' \
+            --exclude='assets' \
+            --exclude='*.log' \
+            --exclude='nohup.out' \
+            --exclude='.venv' \
+            .
+      
       - name: Deploy to CapRover
-        uses: caprover/deploy-from-github@v1.1.2
-        with:
-          server: '${{ secrets.CAPROVER_SERVER }}'
-          app: '${{ secrets.CAPROVER_APP }}'
-          token: '${{ secrets.CAPROVER_TOKEN }}'
+        run: |
+          npx -y caprover deploy \
+            --caproverUrl ${{ secrets.CAPROVER_SERVER }} \
+            --caproverPassword ${{ secrets.CAPROVER_TOKEN }} \
+            --appName ${{ secrets.CAPROVER_APP }} \
+            --tarFile deploy.tar
 
       - name: Sync videos
         uses: appleboy/scp-action@v0.1.7
