@@ -67,6 +67,7 @@
                                 <label class="form-label">Media Files</label>
                                 <input type="file" class="form-control" id="fileUpload" multiple>
                                 <small class="form-text text-muted">Upload images, videos, or documents</small>
+                                <div id="existingMedia" class="mt-2"></div>
                                 <div id="mediaPreview" class="mt-2"></div>
                             </div>
                             
@@ -392,8 +393,13 @@
             document.getElementById('contentId').value = '';
             tinymce.get('body').setContent('');
             uploadedMedia = [];
-            document.getElementById('mediaPreview').innerHTML = '';
-            document.getElementById('existingMedia').innerHTML = '';
+            
+            const mediaPreview = document.getElementById('mediaPreview');
+            if (mediaPreview) mediaPreview.innerHTML = '';
+            
+            const existingMedia = document.getElementById('existingMedia');
+            if (existingMedia) existingMedia.innerHTML = '';
+            
             document.getElementById('formTitle').textContent = 'Create New Content';
         }
 

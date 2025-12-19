@@ -51,12 +51,22 @@ tar -tvf paakpoom-srisin.tar
    - Force HTTPS: ✅ Yes (after SSL is set up)
 
    **App Configs tab:**
+   - Add Environment Variables:
+     - `SECRET_KEY`: Your secret key from .env
+     - `ADMIN_PASSWORD`: Your admin password from .env
+   
    - Add Persistent Directory for Videos:
-     - Path in App: `/usr/share/nginx/html/videos`
+     - Path in App: `/app/videos`
      - Label: `videos`
    - Add Persistent Directory for Assets (APK files):
-     - Path in App: `/usr/share/nginx/html/assets`
+     - Path in App: `/app/assets`
      - Label: `assets`
+   - Add Persistent Directory for Uploads:
+     - Path in App: `/app/uploads`
+     - Label: `uploads`
+   - Add Persistent Directory for Data (Content JSON):
+     - Path in App: `/app/data`
+     - Label: `data`
    - Click "Save & Update"
 
 4. **Add Custom Domain**
