@@ -234,3 +234,29 @@ ConnectionResetError: [Errno 54] Connection reset by peer
 127.0.0.1 - - [17/Dec/2025 23:25:43] "GET /videos/20251216_AppForKhunPoo.mov HTTP/1.1" 206 -
 127.0.0.1 - - [17/Dec/2025 23:25:43] "GET /videos/20251216_AppForKhunPoo.mov HTTP/1.1" 206 -
 127.0.0.1 - - [17/Dec/2025 23:25:43] "GET /videos/20251216_AppForKhunPoo.mov HTTP/1.1" 206 -
+127.0.0.1 - - [18/Dec/2025 00:04:17] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:18] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Dec/2025 00:04:47] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:47] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:48] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:48] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:48] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:48] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:48] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:48] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:48] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:48] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+127.0.0.1 - - [18/Dec/2025 00:04:48] code 404, message File not found
+127.0.0.1 - - [18/Dec/2025 00:04:48] "GET /favicon.ico HTTP/1.1" 404 -
