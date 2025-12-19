@@ -254,12 +254,120 @@
                     document.getElementById('date').value = item.date;
                     uploadedMedia = item.media || [];
                     
+                    // Show existing media with thumbnails
+                    renderExistingMedia();
+                    
                     document.getElementById('formTitle').textContent = 'Edit Content';
                     window.scrollTo({top: 0, behavior: 'smooth'});
                 }
             } catch (error) {
                 console.error('Failed to load content:', error);
             }
+        }
+
+        // Render existing media with thumbnails
+        function renderExistingMedia() {
+            const container = document.getElementById('existingMedia');
+            if (!uploadedMedia || uploadedMedia.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = '<div class="mb-2 fw-bold">Existing Media:</div>';
+            const mediaGrid = document.createElement('div');
+            mediaGrid.className = 'd-flex flex-wrap gap-2';
+            
+            uploadedMedia.forEach((media, index) => {
+                const mediaCard = document.createElement('div');
+                mediaCard.className = 'position-relative border rounded p-2';
+                mediaCard.style.width = '120px';
+                mediaCard.draggable = true;
+                mediaCard.dataset.index = index;
+                
+                // Drag events for reordering
+                mediaCard.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', index);
+                    mediaCard.style.opacity = '0.5';
+                });
+                
+                mediaCard.addEventListener('dragend', (e) => {
+                    mediaCard.style.opacity = '1';
+                });
+                
+                mediaCard.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                
+                mediaCard.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIndex = parseInt(mediaCard.dataset.index);
+                    
+                    if (fromIndex !== toIndex) {
+                        // Reorder array
+                        const item = uploadedMedia.splice(fromIndex, 1)[0];
+                        uploadedMedia.splice(toIndex, 0, item);
+                        renderExistingMedia();
+                    }
+                });
+                
+                // Thumbnail
+                if (media.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = media.url;
+                    img.className = 'img-thumbnail mb-1';
+                    img.style.width = '100%';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    mediaCard.appendChild(img);
+                } else if (media.type === 'video') {
+                    const video = document.createElement('div');
+                    video.className = 'bg-dark text-white text-center mb-1 d-flex align-items-center justify-content-center';
+                    video.style.height = '80px';
+                    video.innerHTML = '<i class="bi bi-play-circle" style="font-size: 2rem;"></i>';
+                    mediaCard.appendChild(video);
+                } else {
+                    const file = document.createElement('div');
+                    file.className = 'bg-light text-center mb-1 d-flex align-items-center justify-content-center';
+                    file.style.height = '80px';
+                    file.innerHTML = '<i class="bi bi-file-earmark" style="font-size: 2rem;"></i>';
+                    mediaCard.appendChild(file);
+                }
+                
+                // Filename
+                const filename = document.createElement('div');
+                filename.className = 'small text-truncate';
+                filename.textContent = media.filename || 'File';
+                filename.style.fontSize = '0.7rem';
+                mediaCard.appendChild(filename);
+                
+                // Delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 m-1';
+                deleteBtn.style.padding = '0.1rem 0.3rem';
+                deleteBtn.innerHTML = '<i class="bi bi-x"></i>';
+                deleteBtn.onclick = () => {
+                    if (confirm('Remove this file?')) {
+                        uploadedMedia.splice(index, 1);
+                        renderExistingMedia();
+                    }
+                };
+                mediaCard.appendChild(deleteBtn);
+                
+                // Order indicator
+                const order = document.createElement('div');
+                order.className = 'badge bg-secondary position-absolute bottom-0 start-0 m-1';
+                order.style.fontSize = '0.6rem';
+                order.textContent = index + 1;
+                mediaCard.appendChild(order);
+                
+                mediaGrid.appendChild(mediaCard);
+            });
+            
+            container.appendChild(mediaGrid);
         }
 
         // Delete content
@@ -285,6 +393,7 @@
             tinymce.get('body').setContent('');
             uploadedMedia = [];
             document.getElementById('mediaPreview').innerHTML = '';
+            document.getElementById('existingMedia').innerHTML = '';
             document.getElementById('formTitle').textContent = 'Create New Content';
         }
 
@@ -300,6 +409,14 @@
 
         // Load content on page load
         loadContent();
+        
+        // Check if edit parameter is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        if (editId) {
+            // Wait for TinyMCE to initialize then load the content
+            setTimeout(() => editContent(parseInt(editId)), 500);
+        }
     </script>
 </body>
 </html>

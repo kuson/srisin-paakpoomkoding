@@ -6,9 +6,24 @@
 (function() {
     'use strict';
 
+    let isAdmin = false;
+
+    // Check if user is authenticated as admin
+    async function checkAdminStatus() {
+        try {
+            const response = await fetch('/api/check-auth');
+            const data = await response.json();
+            isAdmin = data.authenticated;
+        } catch (error) {
+            isAdmin = false;
+        }
+    }
+
     // Load and display content on page load
     async function loadContent() {
         try {
+            await checkAdminStatus();
+            
             const response = await fetch('/api/content');
             const content = await response.json();
             
@@ -58,14 +73,35 @@
         // Header with tag and date
         const header = document.createElement('div');
         header.className = 'd-flex justify-content-between align-items-start mb-3';
-        header.innerHTML = `
-            <span class="badge ${tagClass}">
-                <i class="bi bi-tag me-1"></i>${escapeHtml(item.tag)}
-            </span>
-            <span class="text-muted small">
-                <i class="bi bi-calendar3 me-1"></i>${escapeHtml(item.date)}
-            </span>
-        `;
+        
+        const tagSpan = document.createElement('span');
+        tagSpan.className = `badge ${tagClass}`;
+        tagSpan.innerHTML = `<i class="bi bi-tag me-1"></i>${escapeHtml(item.tag)}`;
+        
+        const rightSide = document.createElement('div');
+        rightSide.className = 'd-flex align-items-center gap-2';
+        
+        // Add edit button if admin
+        if (isAdmin) {
+            const editBtn = document.createElement('a');
+            editBtn.href = `/admin#edit-${item.id}`;
+            editBtn.className = 'btn btn-sm btn-outline-primary';
+            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+            editBtn.title = 'Edit content';
+            editBtn.onclick = (e) => {
+                e.preventDefault();
+                window.location.href = `/admin?edit=${item.id}`;
+            };
+            rightSide.appendChild(editBtn);
+        }
+        
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'text-muted small';
+        dateSpan.innerHTML = `<i class="bi bi-calendar3 me-1"></i>${escapeHtml(item.date)}`;
+        rightSide.appendChild(dateSpan);
+        
+        header.appendChild(tagSpan);
+        header.appendChild(rightSide);
         
         // Title
         const title = document.createElement('h4');

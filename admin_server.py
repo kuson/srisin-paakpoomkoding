@@ -105,6 +105,11 @@ def logout():
     session.clear()
     return jsonify({'success': True})
 
+@app.route('/api/check-auth', methods=['GET'])
+def check_auth_api():
+    """Check if user is authenticated"""
+    return jsonify({'authenticated': check_auth()})
+
 @app.route('/api/content', methods=['GET'])
 def get_content():
     """Get all content"""
