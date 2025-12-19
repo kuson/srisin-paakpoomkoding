@@ -26,7 +26,7 @@ SERVER_IP="${CAPROVER_SERVER_IP:-your-server-ip}"
 SSH_USER="${CAPROVER_SSH_USER:-ubuntu}"
 APP_NAME="${CAPROVER_APP_NAME:-paakpoom-srisin}"
 SSH_KEY_PATH="${CAPROVER_SSH_KEY:-$HOME/.ssh/github-actions-caprover}"
-
+e
 # Check if configuration is set
 if [ "$SERVER_IP" = "your-server-ip" ]; then
     echo -e "${RED}ERROR: Please set your server configuration!${NC}"
