@@ -48,3 +48,9 @@ temp/
 # Large video files - NEVER commit to Git, only rsync to server!
 videos/
 *.mov
+
+# Admin module data and uploads
+data/
+uploads/
+__pycache__/
+*.pyc
