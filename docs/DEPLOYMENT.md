@@ -253,6 +253,9 @@ GitHub
 # Create deployment package
 tar -cvf paakpoom-srisin.tar --exclude='videos/*' --exclude='.git' --exclude='nohup.out' --exclude='server.py' .
 
+Dec 19 -- last used 
+tar --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' --exclude='*.pyo' --exclude='*.pyd' --exclude='.DS_Store' --exclude='.git' --exclude='.gitignore' --exclude='*.mov' --exclude='*.apk' -cvf srisin-deploy.tar *
+
 # Deploy via CLI
 caprover deploy -a paakpoom-srisin
 
