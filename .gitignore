@@ -44,10 +44,3 @@ temp/
 # Backup files
 *.bak
 *.backup
-
-# Video files - upload separately to CapRover
-videos/*.mov
-videos/*.mp4
-videos/*.webm
-videos/*.avi
-videos/*.mkv
