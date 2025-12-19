@@ -25,6 +25,7 @@ echo ""
 SERVER_IP="${CAPROVER_SERVER_IP:-your-server-ip}"
 SSH_USER="${CAPROVER_SSH_USER:-ubuntu}"
 APP_NAME="${CAPROVER_APP_NAME:-paakpoom-srisin}"
+SSH_KEY_PATH="${CAPROVER_SSH_KEY:-$HOME/.ssh/github-actions-caprover}"
 
 # Check if configuration is set
 if [ "$SERVER_IP" = "your-server-ip" ]; then
@@ -36,6 +37,7 @@ if [ "$SERVER_IP" = "your-server-ip" ]; then
     echo "     export CAPROVER_SERVER_IP=your.server.ip"
     echo "     export CAPROVER_SSH_USER=ubuntu"
     echo "     export CAPROVER_APP_NAME=paakpoom-srisin"
+    echo "     export CAPROVER_SSH_KEY=~/.ssh/your-key"
     echo ""
     exit 1
 fi
@@ -53,7 +55,7 @@ echo ""
 
 # Create remote directories with proper permissions
 echo -e "${YELLOW}Setting up remote directories...${NC}"
-ssh "${SSH_USER}@${SERVER_IP}" \
+ssh -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" \
   "sudo mkdir -p ${VIDEOS_REMOTE} ${ASSETS_REMOTE} && \
    sudo chown -R ${SSH_USER}:${SSH_USER} /var/lib/docker/volumes/captain--${APP_NAME}--videos/ /var/lib/docker/volumes/captain--${APP_NAME}--assets/"
 
@@ -70,6 +72,7 @@ upload_rsync() {
     local source=$1
     local destination=$2
     local description=$3
+    local temp_path="/tmp/caprover-upload-$(basename $source)"
     
     echo -e "${YELLOW}Uploading $description...${NC}"
     
@@ -83,19 +86,24 @@ upload_rsync() {
         return 0
     fi
     
-    # rsync options:
-    # -a: archive mode (preserves permissions, times, etc.)
-    # -v: verbose
-    # -z: compress during transfer
-    # -P: show progress and keep partial files
-    # --checksum: use checksums to detect changes (more thorough than timestamp)
-    echo -e "${YELLOW}  → Using rsync with checksum verification (only changed files)${NC}"
-    rsync -avzP --checksum "$source" "${SSH_USER}@${SERVER_IP}:${destination}"
+    # Step 1: Rsync to /tmp (we have permissions there)
+    echo -e "${YELLOW}  → Step 1: Uploading to temporary directory${NC}"
+    rsync -avzP --checksum -e "ssh -i ${SSH_KEY_PATH}" "$source" "${SSH_USER}@${SERVER_IP}:${temp_path}/"
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}  ✗ Failed to upload $description to temp directory${NC}"
+        return 1
+    fi
+    
+    # Step 2: Move from /tmp to Docker volume using sudo
+    echo -e "${YELLOW}  → Step 2: Moving to Docker volume with sudo${NC}"
+    ssh -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" \
+        "sudo rsync -a ${temp_path}/ ${destination} && sudo rm -rf ${temp_path}"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}  ✓ $description uploaded successfully${NC}"
     else
-        echo -e "${RED}  ✗ Failed to upload $description${NC}"
+        echo -e "${RED}  ✗ Failed to move $description to Docker volume${NC}"
         return 1
     fi
     echo ""
