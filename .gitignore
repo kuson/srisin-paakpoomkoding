@@ -44,3 +44,6 @@ temp/
 # Backup files
 *.bak
 *.backup
+
+# Large video files - NEVER commit to Git, only rsync to server!
+videos/

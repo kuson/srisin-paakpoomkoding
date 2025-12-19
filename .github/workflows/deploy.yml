@@ -38,7 +38,7 @@ jobs:
       
       # Sync large files to persistent storage (only if SSH credentials are configured)
       - name: Sync videos to persistent storage
-        if: secrets.SERVER_IP != '' && secrets.SERVER_SSH_KEY != ''
+        if: ${{ secrets.SERVER_IP != '' && secrets.SERVER_SSH_KEY != '' }}
         run: |
           # Install SSH key
           mkdir -p ~/.ssh
@@ -59,7 +59,7 @@ jobs:
           fi
       
       - name: Sync assets to persistent storage
-        if: secrets.SERVER_IP != '' && secrets.SERVER_SSH_KEY != ''
+        if: ${{ secrets.SERVER_IP != '' && secrets.SERVER_SSH_KEY != '' }}
         run: |
           # Sync assets with rsync (only uploads changed files)
           if [ -d "assets" ] && [ "$(ls -A assets)" ]; then
