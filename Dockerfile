@@ -1,33 +1,37 @@
 # ===========================================
 # Srisin Family Website - Dockerfile
-# Multi-stage build for optimized image size
+# Flask app with admin panel and static site
 # ===========================================
 
-# Use nginx alpine for lightweight production image
-FROM nginx:alpine
+FROM python:3.11-slim
 
 # Set working directory
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# Remove default nginx static assets
-RUN rm -rf ./*
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy website files
+# Copy application files
+COPY admin_server.py .
 COPY index.html .
 COPY css/ ./css/
 COPY js/ ./js/
+COPY templates/ ./templates/
 
-# Create directories for persistent storage (synced manually via rsync)
-RUN mkdir -p ./videos ./assets
-
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create directories for persistent storage and data
+RUN mkdir -p ./videos ./assets ./uploads ./data
 
 # Create health check file
-RUN echo "OK" > /usr/share/nginx/html/health.txt
+RUN echo "OK" > /app/health.txt
+
+# Set environment variables
+ENV FLASK_APP=admin_server.py
+ENV HOST=0.0.0.0
+ENV PORT=80
 
 # Expose port 80
 EXPOSE 80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start Flask app
+CMD ["python", "admin_server.py"]
