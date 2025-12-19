@@ -32,7 +32,7 @@ jobs:
         run: |
           npx -y caprover deploy \
             --caproverUrl ${{ secrets.CAPROVER_SERVER }} \
-            --caproverPassword ${{ secrets.CAPROVER_TOKEN }} \
+            --appToken ${{ secrets.CAPROVER_TOKEN }} \
             --appName ${{ secrets.CAPROVER_APP }} \
             --tarFile deploy.tar
 
