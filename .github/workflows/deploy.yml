@@ -15,7 +15,7 @@ jobs:
       
       - name: Create deployment tarball
         run: |
-          tar -czf deploy.tar \
+          tar -czf ../deploy.tar \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='videos' \
@@ -25,6 +25,8 @@ jobs:
             --exclude='nohup.out' \
             --exclude='.venv' \
             .
+          mv ../deploy.tar ./deploy.tar
+
       
       - name: Deploy to CapRover
         run: |
