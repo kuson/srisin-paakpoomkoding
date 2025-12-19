@@ -256,6 +256,12 @@ tar -cvf paakpoom-srisin.tar --exclude='videos/*' --exclude='.git' --exclude='no
 Dec 19 -- last used 
 tar --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' --exclude='*.pyo' --exclude='*.pyd' --exclude='.DS_Store' --exclude='.git' --exclude='.gitignore' --exclude='*.mov' --exclude='*.apk' -cvf srisin-deploy.tar *
 
+/usr/share/nginx/html/videos/20251216_AppForKhunPoo.mov
+/usr/share/nginx/html/assets/Dad_Medicine_Reminder_v2.apk
+
+Link on website:
+https://paakpoom.srisin.com/assets/Dad_Medicine_Reminder_v2.apk
+
 # Deploy via CLI
 caprover deploy -a paakpoom-srisin
 
