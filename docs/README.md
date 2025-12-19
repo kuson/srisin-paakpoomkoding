@@ -38,20 +38,27 @@ This website is designed for the Srisin family, specifically created with love f
 
 ```
 srisin/
-├── index.html              # Main HTML page
+├── index.html                      # Main HTML page
 ├── css/
-│   └── style.css           # Custom styles
+│   └── style.css                   # Custom styles
 ├── js/
-│   └── player.js           # Video player functionality
+│   └── player.js                   # Video player functionality
 ├── videos/
 │   └── 20251216_AppForKhunPoo.mov  # Video files
-├── assets/                 # Images and other media
+├── assets/
+│   ├── Dad_Medicine_Reminder_v2.apk  # Android app download
+│   └── README.md                   # Assets documentation
 ├── docs/
-│   └── README.md           # This documentation
-├── Dockerfile              # Docker configuration
-├── captain-definition      # CapRover configuration
-├── nginx.conf              # Nginx web server config
-└── .gitignore              # Git ignore rules
+│   ├── README.md                   # This documentation
+│   └── DEPLOYMENT.md               # Deployment guide
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # GitHub Actions CI/CD
+├── Dockerfile                      # Docker configuration
+├── captain-definition              # CapRover configuration
+├── nginx.conf                      # Nginx web server config
+├── server.py                       # Local dev server with range support
+└── .gitignore                      # Git ignore rules
 ```
 
 ---
@@ -60,6 +67,7 @@ srisin/
 
 ### 🏠 Hero Section
 - Large, welcoming greeting for Paak and Poom
+- **Medicine Reminder app download** - Download APK directly from the site
 - Animated emoji decorations
 - Gradient background with smooth wave transition
 - Call-to-action button to videos section
@@ -93,6 +101,7 @@ srisin/
 | Bootstrap Icons | 1.11.1 | Icon library |
 | Nginx | Alpine | Web server |
 | Docker | Latest | Containerization |
+| GitHub Actions | v4 | CI/CD automation |
 
 ---
 
@@ -207,7 +216,7 @@ Edit `css/style.css` and modify the CSS variables at the top:
 
 ### Changing the Greeting
 
-Edit `index.html` line ~47:
+Edit `index.html` lines 55-57:
 
 ```html
 <h1 class="display-2 fw-bold text-gradient mb-4">
@@ -347,4 +356,4 @@ This website is created for the Srisin family. All rights reserved.
 
 **Made with ❤️ for Paak & Poom**
 
-*Last updated: December 17, 2025*
+*Last updated: December 19, 2025*

@@ -51,9 +51,12 @@ tar -tvf paakpoom-srisin.tar
    - Force HTTPS: ✅ Yes (after SSL is set up)
 
    **App Configs tab:**
-   - Add Persistent Directory:
+   - Add Persistent Directory for Videos:
      - Path in App: `/usr/share/nginx/html/videos`
      - Label: `videos`
+   - Add Persistent Directory for Assets (APK files):
+     - Path in App: `/usr/share/nginx/html/assets`
+     - Label: `assets`
    - Click "Save & Update"
 
 4. **Add Custom Domain**
@@ -189,13 +192,16 @@ Given your tools (GitHub, Oracle OCI Free Tier), here's the best setup:
    
    on:
      push:
-       branches: [main]
+       branches: [main, master]
+     workflow_dispatch:  # Allow manual trigger
    
    jobs:
      deploy:
        runs-on: ubuntu-latest
+       
        steps:
-         - uses: actions/checkout@v4
+         - name: Checkout code
+           uses: actions/checkout@v4
          
          - name: Deploy to CapRover
            uses: caprover/deploy-from-github@v1.1.2
@@ -203,6 +209,24 @@ Given your tools (GitHub, Oracle OCI Free Tier), here's the best setup:
              server: '${{ secrets.CAPROVER_SERVER }}'
              app: '${{ secrets.CAPROVER_APP }}'
              token: '${{ secrets.CAPROVER_TOKEN }}'
+
+         - name: Sync videos
+           uses: appleboy/scp-action@v0.1.7
+           with:
+             host: ${{ secrets.SERVER_IP }}
+             username: ubuntu
+             key: ${{ secrets.SERVER_SSH_KEY }}
+             source: "videos/*"
+             target: "/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--videos/_data/"
+
+         - name: Sync assets
+           uses: appleboy/scp-action@v0.1.7
+           with:
+             host: ${{ secrets.SERVER_IP }}
+             username: ubuntu
+             key: ${{ secrets.SERVER_SSH_KEY }}
+             source: "assets/*.apk"
+             target: "/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--assets/_data/"
    ```
 
 3. **Add GitHub Secrets**
@@ -211,6 +235,8 @@ Given your tools (GitHub, Oracle OCI Free Tier), here's the best setup:
      - `CAPROVER_SERVER`: `https://captain.thaisafe.org`
      - `CAPROVER_APP`: `paakpoom-srisin`
      - `CAPROVER_TOKEN`: (get from CapRover → Apps → Your App → Deployment → API Token)
+     - `SERVER_IP`: Your CapRover server IP address
+     - `SERVER_SSH_KEY`: Private SSH key for accessing the server
 
 ### Alternative: Oracle OCI Setup
 
@@ -284,6 +310,11 @@ curl -I https://paakpoom.srisin.com
 - Verify DNS is pointing to server
 - Check CapRover → Apps → Your App → Enable HTTPS
 
+### APK Download Not Working
+- Check assets persistent storage is mounted correctly
+- Verify APK file exists in the correct path on server
+- Ensure Dockerfile includes assets folder in the build
+
 ---
 
-*Last updated: December 17, 2025*
+*Last updated: December 19, 2025*
