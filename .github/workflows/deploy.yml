@@ -24,7 +24,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
-          username: root
+          username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "videos/*"
           target: "/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--videos/_data/"
@@ -33,7 +33,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
-          username: root
+          username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "assets/*.apk"
           target: "/var/lib/docker/volumes/captain--${{ secrets.CAPROVER_APP }}--assets/_data/"
