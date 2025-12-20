@@ -76,8 +76,20 @@ def increment_visit_count():
     return count
 
 def check_auth():
-    """Check if user is authenticated"""
-    return session.get('authenticated', False)
+    """Check if user is authenticated (session or API token)"""
+    # Check session authentication
+    if session.get('authenticated', False):
+        return True
+    
+    # Check API token authentication
+    auth_header = request.headers.get('Authorization', '')
+    if auth_header.startswith('Bearer '):
+        token = auth_header[7:]  # Remove 'Bearer ' prefix
+        api_token = os.getenv('API_TOKEN')
+        if api_token and token == api_token:
+            return True
+    
+    return False
 
 @app.route('/')
 def index():
