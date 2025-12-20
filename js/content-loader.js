@@ -38,17 +38,19 @@
                 return;
             }
             
-            const container = contentSection.querySelector('.row.g-4');
+            const container = document.getElementById('contentContainer');
             if (!container) {
                 console.error('Content container not found');
                 return;
             }
             
-            // Clear existing dynamic content (keep static content if needed)
-            // Insert dynamic content at the beginning
+            // Clear existing dynamic content
+            container.innerHTML = '';
+            
+            // Insert dynamic content
             content.forEach(item => {
                 const card = createContentCard(item);
-                container.insertBefore(card, container.firstChild);
+                container.appendChild(card);
             });
             
         } catch (error) {
@@ -62,10 +64,10 @@
         
         // Create element programmatically to avoid XSS
         const col = document.createElement('div');
-        col.className = 'col-lg-6';
+        col.className = 'masonry-item';
         
         const card = document.createElement('div');
-        card.className = 'card h-100 shadow-sm';
+        card.className = 'card shadow-sm content-card';
         
         const cardBody = document.createElement('div');
         cardBody.className = 'card-body';
@@ -143,56 +145,60 @@
         const videos = mediaArray.filter(m => m.type === 'video');
         const files = mediaArray.filter(m => m.type === 'file');
         
+        // Combine images and videos for gallery, sort by order (assume already sorted)
+        const mediaItems = [
+            ...images.map(m => ({ ...m, mediaType: 'image' })),
+            ...videos.map(m => ({ ...m, mediaType: 'video' }))
+        ];
+        
         let html = '<div class="mt-3">';
         
-        // Render images in a responsive gallery grid
-        if (images.length > 0) {
-            html += '<div class="image-gallery mb-3">';
-            images.forEach((img, index) => {
-                const escapedUrl = escapeHtml(img.url);
-                const escapedFilename = escapeHtml(img.filename || 'Image');
-                // Determine column size based on number of images
-                let colClass = 'col-12';
-                if (images.length === 2) colClass = 'col-md-6';
-                else if (images.length === 3) colClass = 'col-md-4';
-                else if (images.length >= 4) colClass = 'col-6 col-md-4 col-lg-3';
+        // Create thumbnail preview grid that opens gallery
+        if (mediaItems.length > 0) {
+            const imageUrls = images.map(i => i.url);
+            const videoUrls = videos.map(v => v.url);
+            const allMediaJson = JSON.stringify(mediaItems);
+            
+            // Grid classes based on count
+            const gridClass = mediaItems.length === 1 ? 'single' : 
+                              mediaItems.length === 2 ? 'double' : 
+                              mediaItems.length <= 4 ? 'quad' : 'multi';
+            
+            html += `<div class="media-preview-grid ${gridClass}" onclick='openMediaGallery(${allMediaJson}, 0)'>`;
+            
+            // Show up to 4 preview items
+            const previewItems = mediaItems.slice(0, 4);
+            previewItems.forEach((item, index) => {
+                const escapedUrl = escapeHtml(item.url);
+                const isVideo = item.mediaType === 'video';
+                const moreCount = mediaItems.length - 4;
                 
-                html += `
-                    <div class="${colClass} gallery-item" data-index="${index}">
-                        <div class="gallery-image-wrapper">
-                            <img src="${escapedUrl}" 
-                                 class="img-fluid rounded gallery-image" 
-                                 alt="${escapedFilename}" 
-                                 onclick="openGallery(${JSON.stringify(images.map(i => i.url))}, ${index})"
-                                 loading="lazy">
-                            <div class="gallery-overlay">
-                                <i class="bi bi-zoom-in"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                html += `<div class="preview-item ${index === 3 && moreCount > 0 ? 'has-more' : ''}">`;
+                
+                if (isVideo) {
+                    html += `
+                        <div class="video-preview-thumb">
+                            <video src="${escapedUrl}" muted preload="metadata"></video>
+                            <div class="video-play-icon"><i class="bi bi-play-circle-fill"></i></div>
+                        </div>`;
+                } else {
+                    html += `<img src="${escapedUrl}" alt="Preview" loading="lazy">`;
+                }
+                
+                if (index === 3 && moreCount > 0) {
+                    html += `<div class="more-overlay">+${moreCount}</div>`;
+                }
+                
+                html += `<div class="preview-hover-overlay"><i class="bi bi-zoom-in"></i></div>`;
+                html += `</div>`;
             });
+            
             html += '</div>';
         }
         
-        // Render videos with proper escaping
-        if (videos.length > 0) {
-            videos.forEach(video => {
-                const escapedUrl = escapeHtml(video.url);
-                html += `
-                    <div class="mb-3">
-                        <video controls class="w-100 rounded">
-                            <source src="${escapedUrl}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                `;
-            });
-        }
-        
-        // Render files with proper escaping
+        // Render downloadable files (not images/videos which are in gallery)
         if (files.length > 0) {
-            html += '<div class="list-group list-group-flush">';
+            html += '<div class=\"list-group list-group-flush mt-3\">';
             files.forEach(file => {
                 const icon = getFileIcon(file.filename);
                 const escapedUrl = escapeHtml(file.url);
@@ -230,68 +236,132 @@
     }
     
     // Gallery navigation state
-    let currentGalleryImages = [];
-    let currentImageIndex = 0;
+    let currentGalleryMedia = [];
+    let currentMediaIndex = 0;
     
-    // Open gallery with navigation
-    window.openGallery = function(imageUrls, startIndex = 0) {
-        currentGalleryImages = imageUrls;
-        currentImageIndex = startIndex;
-        showGalleryImage();
+    // Open media gallery with images and videos
+    window.openMediaGallery = function(mediaItems, startIndex = 0) {
+        currentGalleryMedia = mediaItems;
+        currentMediaIndex = startIndex;
+        
+        // Build thumbnails
+        buildGalleryThumbnails();
+        showCurrentMedia();
         
         const lightboxModal = new bootstrap.Modal(document.getElementById('imageLightbox'));
         lightboxModal.show();
     };
     
-    // Show current image in gallery
-    function showGalleryImage() {
+    // Legacy function for backward compatibility
+    window.openGallery = function(imageUrls, startIndex = 0) {
+        const mediaItems = imageUrls.map(url => ({ url, mediaType: 'image' }));
+        openMediaGallery(mediaItems, startIndex);
+    };
+    
+    window.openLightbox = function(imageUrl) {
+        openMediaGallery([{ url: imageUrl, mediaType: 'image' }], 0);
+    };
+    
+    // Build thumbnail strip
+    function buildGalleryThumbnails() {
+        const container = document.getElementById('galleryThumbnails');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        currentGalleryMedia.forEach((media, index) => {
+            const thumb = document.createElement('div');
+            thumb.className = `gallery-thumb ${index === currentMediaIndex ? 'active' : ''}`;
+            thumb.onclick = () => goToMedia(index);
+            
+            if (media.mediaType === 'video') {
+                thumb.innerHTML = `
+                    <div class="thumb-video">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>`;
+            } else {
+                thumb.innerHTML = `<img src="${escapeHtml(media.url)}" alt="Thumbnail">`;
+            }
+            
+            container.appendChild(thumb);
+        });
+    }
+    
+    // Show current media item
+    function showCurrentMedia() {
+        const media = currentGalleryMedia[currentMediaIndex];
         const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxVideo = document.getElementById('lightboxVideo');
+        const lightboxVideoSource = document.getElementById('lightboxVideoSource');
         const imageCounter = document.getElementById('imageCounter');
         const prevBtn = document.getElementById('lightboxPrevBtn');
         const nextBtn = document.getElementById('lightboxNextBtn');
         
-        lightboxImage.src = currentGalleryImages[currentImageIndex];
+        // Pause any playing video
+        if (lightboxVideo) {
+            lightboxVideo.pause();
+        }
         
+        if (media.mediaType === 'video') {
+            lightboxImage.style.display = 'none';
+            lightboxVideo.style.display = 'block';
+            lightboxVideoSource.src = media.url;
+            lightboxVideo.load();
+        } else {
+            lightboxVideo.style.display = 'none';
+            lightboxImage.style.display = 'block';
+            lightboxImage.src = media.url;
+        }
+        
+        // Update counter
         if (imageCounter) {
-            imageCounter.textContent = `${currentImageIndex + 1} / ${currentGalleryImages.length}`;
+            const typeIcon = media.mediaType === 'video' ? '<i class="bi bi-camera-video me-2"></i>' : '<i class="bi bi-image me-2"></i>';
+            imageCounter.innerHTML = `${typeIcon}${currentMediaIndex + 1} / ${currentGalleryMedia.length}`;
         }
         
         // Show/hide navigation buttons
         if (prevBtn && nextBtn) {
-            prevBtn.style.display = currentGalleryImages.length > 1 ? 'block' : 'none';
-            nextBtn.style.display = currentGalleryImages.length > 1 ? 'block' : 'none';
+            const showNav = currentGalleryMedia.length > 1;
+            prevBtn.style.display = showNav ? 'flex' : 'none';
+            nextBtn.style.display = showNav ? 'flex' : 'none';
         }
+        
+        // Update active thumbnail
+        document.querySelectorAll('.gallery-thumb').forEach((thumb, idx) => {
+            thumb.classList.toggle('active', idx === currentMediaIndex);
+        });
     }
     
-    // Navigate to previous image
-    window.previousImage = function() {
-        currentImageIndex = (currentImageIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-        showGalleryImage();
+    // Navigate to specific media
+    function goToMedia(index) {
+        currentMediaIndex = index;
+        showCurrentMedia();
+    }
+    
+    // Navigate to previous media
+    window.previousMedia = function() {
+        currentMediaIndex = (currentMediaIndex - 1 + currentGalleryMedia.length) % currentGalleryMedia.length;
+        showCurrentMedia();
     };
     
-    // Navigate to next image
-    window.nextImage = function() {
-        currentImageIndex = (currentImageIndex + 1) % currentGalleryImages.length;
-        showGalleryImage();
+    // Navigate to next media
+    window.nextMedia = function() {
+        currentMediaIndex = (currentMediaIndex + 1) % currentGalleryMedia.length;
+        showCurrentMedia();
     };
     
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('imageLightbox');
         if (modal && modal.classList.contains('show')) {
-            if (e.key === 'ArrowLeft') previousImage();
-            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') previousMedia();
+            if (e.key === 'ArrowRight') nextMedia();
             if (e.key === 'Escape') {
                 const lightboxModal = bootstrap.Modal.getInstance(modal);
                 if (lightboxModal) lightboxModal.hide();
             }
         }
     });
-    
-    // Legacy function for backward compatibility
-    window.openLightbox = function(imageUrl) {
-        openGallery([imageUrl], 0);
-    };
     
     // Load content when DOM is ready
     if (document.readyState === 'loading') {
