@@ -145,15 +145,30 @@
         
         let html = '<div class="mt-3">';
         
-        // Render images with proper escaping and clickable lightbox
+        // Render images in a responsive gallery grid
         if (images.length > 0) {
-            html += '<div class="row g-2 mb-3">';
-            images.forEach(img => {
+            html += '<div class="image-gallery mb-3">';
+            images.forEach((img, index) => {
                 const escapedUrl = escapeHtml(img.url);
-                const escapedFilename = escapeHtml(img.filename);
+                const escapedFilename = escapeHtml(img.filename || 'Image');
+                // Determine column size based on number of images
+                let colClass = 'col-12';
+                if (images.length === 2) colClass = 'col-md-6';
+                else if (images.length === 3) colClass = 'col-md-4';
+                else if (images.length >= 4) colClass = 'col-6 col-md-4 col-lg-3';
+                
                 html += `
-                    <div class="col-md-${images.length === 1 ? '12' : '6'}">
-                        <img src="${escapedUrl}" class="img-fluid rounded clickable-image" alt="${escapedFilename}" style="cursor: pointer;" onclick="openLightbox('${escapedUrl}')">
+                    <div class="${colClass} gallery-item" data-index="${index}">
+                        <div class="gallery-image-wrapper">
+                            <img src="${escapedUrl}" 
+                                 class="img-fluid rounded gallery-image" 
+                                 alt="${escapedFilename}" 
+                                 onclick="openGallery(${JSON.stringify(images.map(i => i.url))}, ${index})"
+                                 loading="lazy">
+                            <div class="gallery-overlay">
+                                <i class="bi bi-zoom-in"></i>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -214,12 +229,68 @@
         return div.innerHTML;
     }
     
-    // Make openLightbox globally accessible
-    window.openLightbox = function(imageUrl) {
-        const lightboxImage = document.getElementById('lightboxImage');
+    // Gallery navigation state
+    let currentGalleryImages = [];
+    let currentImageIndex = 0;
+    
+    // Open gallery with navigation
+    window.openGallery = function(imageUrls, startIndex = 0) {
+        currentGalleryImages = imageUrls;
+        currentImageIndex = startIndex;
+        showGalleryImage();
+        
         const lightboxModal = new bootstrap.Modal(document.getElementById('imageLightbox'));
-        lightboxImage.src = imageUrl;
         lightboxModal.show();
+    };
+    
+    // Show current image in gallery
+    function showGalleryImage() {
+        const lightboxImage = document.getElementById('lightboxImage');
+        const imageCounter = document.getElementById('imageCounter');
+        const prevBtn = document.getElementById('lightboxPrevBtn');
+        const nextBtn = document.getElementById('lightboxNextBtn');
+        
+        lightboxImage.src = currentGalleryImages[currentImageIndex];
+        
+        if (imageCounter) {
+            imageCounter.textContent = `${currentImageIndex + 1} / ${currentGalleryImages.length}`;
+        }
+        
+        // Show/hide navigation buttons
+        if (prevBtn && nextBtn) {
+            prevBtn.style.display = currentGalleryImages.length > 1 ? 'block' : 'none';
+            nextBtn.style.display = currentGalleryImages.length > 1 ? 'block' : 'none';
+        }
+    }
+    
+    // Navigate to previous image
+    window.previousImage = function() {
+        currentImageIndex = (currentImageIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        showGalleryImage();
+    };
+    
+    // Navigate to next image
+    window.nextImage = function() {
+        currentImageIndex = (currentImageIndex + 1) % currentGalleryImages.length;
+        showGalleryImage();
+    };
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('imageLightbox');
+        if (modal && modal.classList.contains('show')) {
+            if (e.key === 'ArrowLeft') previousImage();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'Escape') {
+                const lightboxModal = bootstrap.Modal.getInstance(modal);
+                if (lightboxModal) lightboxModal.hide();
+            }
+        }
+    });
+    
+    // Legacy function for backward compatibility
+    window.openLightbox = function(imageUrl) {
+        openGallery([imageUrl], 0);
     };
     
     // Load content when DOM is ready

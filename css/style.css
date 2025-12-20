@@ -629,10 +629,113 @@ html {
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
+/* ============ Image Gallery Grid ============ */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .image-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.gallery-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 75%; /* 4:3 aspect ratio */
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f0f0f0;
+    cursor: pointer;
+}
+
+.gallery-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    font-size: 2rem;
+}
+
+.gallery-image-wrapper:hover .gallery-image {
+    transform: scale(1.1);
+}
+
+.gallery-image-wrapper:hover .gallery-overlay {
+    opacity: 1;
+}
+
+/* ============ Enhanced Lightbox ============ */
 #imageLightbox .modal-dialog {
     max-width: 90vw;
 }
 
 #imageLightbox .modal-content {
     background: rgba(0,0,0,0.95) !important;
+}
+
+#imageLightbox .btn-light:hover {
+    opacity: 1 !important;
+    transform: scale(1.1);
+}
+
+#lightboxImage {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Navigation buttons responsive */
+@media (max-width: 768px) {
+    #lightboxPrevBtn,
+    #lightboxNextBtn {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    #lightboxPrevBtn {
+        margin-left: 0.5rem !important;
+    }
+    
+    #lightboxNextBtn {
+        margin-right: 0.5rem !important;
+    }
 }

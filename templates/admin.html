@@ -65,9 +65,28 @@
                             
                             <div class="mb-3">
                                 <label class="form-label">Media Files</label>
-                                <input type="file" class="form-control" id="fileUpload" multiple>
-                                <small class="form-text text-muted">Upload images, videos, or documents</small>
-                                <div id="existingMedia" class="mt-2"></div>
+                                
+                                <!-- Drag and Drop Zone -->
+                                <div id="dropZone" class="drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #5b8dee;"></i>
+                                        <p class="mb-2 fw-bold">Drag & Drop Images Here</p>
+                                        <p class="text-muted small">or</p>
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('fileUpload').click()">
+                                            <i class="bi bi-folder2-open me-1"></i>Browse Files
+                                        </button>
+                                        <input type="file" class="d-none" id="fileUpload" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip">
+                                        <p class="text-muted small mt-2">Supports: Images, Videos, PDF, Documents</p>
+                                    </div>
+                                    <div id="uploadProgress" class="upload-progress" style="display: none;">
+                                        <div class="progress">
+                                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <p class="text-center mt-2 small" id="uploadStatus">Uploading...</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="existingMedia" class="mt-3"></div>
                                 <div id="mediaPreview" class="mt-2"></div>
                             </div>
                             
@@ -104,6 +123,64 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .drop-zone {
+            border: 3px dashed #5b8dee;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .drop-zone:hover {
+            background: #e9ecef;
+            border-color: #4a7cd9;
+        }
+        
+        .drop-zone.drag-over {
+            background: #e7f1ff;
+            border-color: #0d6efd;
+            transform: scale(1.02);
+        }
+        
+        .drop-zone-content {
+            pointer-events: none;
+        }
+        
+        .upload-progress {
+            padding: 1rem;
+        }
+        
+        .media-thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .media-thumbnail-card {
+            position: relative;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background: white;
+            cursor: move;
+            transition: all 0.2s;
+        }
+        
+        .media-thumbnail-card:hover {
+            border-color: #5b8dee;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .media-thumbnail-card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
     <script>
         let editor;
         let uploadedMedia = [];
@@ -118,16 +195,67 @@
             content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }'
         });
 
-        // File upload handling
-        document.getElementById('fileUpload').addEventListener('change', async (e) => {
-            const files = e.target.files;
+        // Drag and Drop functionality
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileUpload');
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight drop zone when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+        
+        // Handle dropped files
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }, false);
+        
+        // Handle file selection from browse button
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        // Upload files
+        async function handleFiles(files) {
             const preview = document.getElementById('mediaPreview');
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const uploadStatus = document.getElementById('uploadStatus');
             
-            for (let file of files) {
+            if (files.length === 0) return;
+            
+            progressContainer.style.display = 'block';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 const formData = new FormData();
                 formData.append('file', file);
                 
                 try {
+                    // Update progress
+                    const percent = Math.round(((i + 1) / files.length) * 100);
+                    progressBar.style.width = percent + '%';
+                    uploadStatus.textContent = `Uploading ${i + 1} of ${files.length}: ${file.name}`;
+                    
                     const response = await fetch('/api/upload', {
                         method: 'POST',
                         body: formData
@@ -141,17 +269,39 @@
                             filename: data.filename
                         });
                         
-                        // Show preview
+                        // Show preview badge
                         const badge = document.createElement('span');
                         badge.className = 'badge bg-success me-2 mb-2';
                         badge.innerHTML = `<i class="bi bi-check-circle me-1"></i>${file.name}`;
                         preview.appendChild(badge);
+                    } else {
+                        // Show error badge
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-danger me-2 mb-2';
+                        badge.innerHTML = `<i class="bi bi-x-circle me-1"></i>${file.name} - Failed`;
+                        preview.appendChild(badge);
                     }
                 } catch (error) {
                     console.error('Upload failed:', error);
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-danger me-2 mb-2';
+                    badge.innerHTML = `<i class="bi bi-x-circle me-1"></i>${file.name} - Error`;
+                    preview.appendChild(badge);
                 }
             }
-        });
+            
+            // Hide progress after completion
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+            }, 1000);
+            
+            // Refresh existing media display
+            renderExistingMedia();
+            
+            // Clear file input
+            fileInput.value = '';
+        }
 
         // Form submission
         document.getElementById('contentForm').addEventListener('submit', async (e) => {
@@ -274,14 +424,13 @@
                 return;
             }
             
-            container.innerHTML = '<div class="mb-2 fw-bold">Existing Media:</div>';
+            container.innerHTML = '<div class="mb-2 fw-bold"><i class="bi bi-images me-2"></i>Uploaded Media (' + uploadedMedia.length + '):</div>';
             const mediaGrid = document.createElement('div');
-            mediaGrid.className = 'd-flex flex-wrap gap-2';
+            mediaGrid.className = 'media-thumbnail-grid';
             
             uploadedMedia.forEach((media, index) => {
                 const mediaCard = document.createElement('div');
-                mediaCard.className = 'position-relative border rounded p-2';
-                mediaCard.style.width = '120px';
+                mediaCard.className = 'media-thumbnail-card';
                 mediaCard.draggable = true;
                 mediaCard.dataset.index = index;
                 
