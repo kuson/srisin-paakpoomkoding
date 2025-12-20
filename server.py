@@ -6,12 +6,74 @@ This allows video seeking/scrubbing to work properly
 
 import os
 import re
+import json
 import http.server
 import socketserver
 from pathlib import Path
+from datetime import datetime
+
+# Visit counter file
+VISIT_COUNTER_FILE = "data/visit_counter.json"
+
+def load_visit_count():
+    """Load visit count from file"""
+    try:
+        if os.path.exists(VISIT_COUNTER_FILE):
+            with open(VISIT_COUNTER_FILE, 'r') as f:
+                data = json.load(f)
+                return data.get('count', 0)
+    except Exception as e:
+        print(f"Error loading visit count: {e}")
+    return 0
+
+def save_visit_count(count):
+    """Save visit count to file"""
+    try:
+        os.makedirs(os.path.dirname(VISIT_COUNTER_FILE), exist_ok=True)
+        with open(VISIT_COUNTER_FILE, 'w') as f:
+            json.dump({
+                'count': count,
+                'last_updated': datetime.now().isoformat()
+            }, f)
+    except Exception as e:
+        print(f"Error saving visit count: {e}")
+
+def increment_visit_count():
+    """Increment and return visit count"""
+    count = load_visit_count()
+    count += 1
+    save_visit_count(count)
+    return count
 
 class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     """HTTP request handler with support for Range requests (needed for video seeking)"""
+    
+    def do_GET(self):
+        """Handle GET requests with visit counter API"""
+        # API endpoint for visit counter
+        if self.path == '/api/visit':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            count = load_visit_count()
+            response = json.dumps({'visits': count})
+            self.wfile.write(response.encode())
+            return
+        
+        # API endpoint to increment visit counter
+        elif self.path == '/api/visit/increment':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            count = increment_visit_count()
+            response = json.dumps({'visits': count})
+            self.wfile.write(response.encode())
+            return
+        
+        # Default file serving
+        return super().do_GET()
     
     def send_head(self):
         """Common code for GET and HEAD commands with Range support"""
