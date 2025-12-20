@@ -619,3 +619,20 @@ html {
 .loading {
     animation: pulse 1.5s infinite;
 }
+/* ============ Clickable Images ============ */
+.clickable-image {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clickable-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+#imageLightbox .modal-dialog {
+    max-width: 90vw;
+}
+
+#imageLightbox .modal-content {
+    background: rgba(0,0,0,0.95) !important;
+}

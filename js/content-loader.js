@@ -145,7 +145,7 @@
         
         let html = '<div class="mt-3">';
         
-        // Render images with proper escaping
+        // Render images with proper escaping and clickable lightbox
         if (images.length > 0) {
             html += '<div class="row g-2 mb-3">';
             images.forEach(img => {
@@ -153,7 +153,7 @@
                 const escapedFilename = escapeHtml(img.filename);
                 html += `
                     <div class="col-md-${images.length === 1 ? '12' : '6'}">
-                        <img src="${escapedUrl}" class="img-fluid rounded" alt="${escapedFilename}">
+                        <img src="${escapedUrl}" class="img-fluid rounded clickable-image" alt="${escapedFilename}" style="cursor: pointer;" onclick="openLightbox('${escapedUrl}')">
                     </div>
                 `;
             });
@@ -213,6 +213,14 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    // Make openLightbox globally accessible
+    window.openLightbox = function(imageUrl) {
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxModal = new bootstrap.Modal(document.getElementById('imageLightbox'));
+        lightboxImage.src = imageUrl;
+        lightboxModal.show();
+    };
     
     // Load content when DOM is ready
     if (document.readyState === 'loading') {

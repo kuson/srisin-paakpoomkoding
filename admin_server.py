@@ -33,6 +33,7 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 TEMPLATES_DIR.mkdir(exist_ok=True)
 
 CONTENT_FILE = DATA_DIR / 'content.json'
+VISIT_COUNTER_FILE = DATA_DIR / 'visit_counter.json'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'avi', 'pdf', 'doc', 'docx', 'txt', 'zip'}
 
 def allowed_file(filename):
@@ -50,6 +51,29 @@ def save_content(content):
     """Save content to JSON file"""
     with open(CONTENT_FILE, 'w', encoding='utf-8') as f:
         json.dump(content, f, indent=2, ensure_ascii=False)
+
+def load_visit_count():
+    """Load visit count from JSON file"""
+    if VISIT_COUNTER_FILE.exists():
+        with open(VISIT_COUNTER_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('count', 0)
+    return 0
+
+def save_visit_count(count):
+    """Save visit count to JSON file"""
+    with open(VISIT_COUNTER_FILE, 'w', encoding='utf-8') as f:
+        json.dump({
+            'count': count,
+            'last_updated': datetime.now().isoformat()
+        }, f, indent=2)
+
+def increment_visit_count():
+    """Increment and return visit count"""
+    count = load_visit_count()
+    count += 1
+    save_visit_count(count)
+    return count
 
 def check_auth():
     """Check if user is authenticated"""
@@ -109,6 +133,18 @@ def logout():
 def check_auth_api():
     """Check if user is authenticated"""
     return jsonify({'authenticated': check_auth()})
+
+@app.route('/api/visit', methods=['GET'])
+def get_visit_count():
+    """Get current visit count"""
+    count = load_visit_count()
+    return jsonify({'visits': count})
+
+@app.route('/api/visit/increment', methods=['GET', 'POST'])
+def increment_visit():
+    """Increment visit count"""
+    count = increment_visit_count()
+    return jsonify({'visits': count})
 
 @app.route('/api/content', methods=['GET'])
 def get_content():
