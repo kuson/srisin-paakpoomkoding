@@ -139,13 +139,66 @@
         const videos = mediaArray.filter(m => m.type === 'video');
         const files = mediaArray.filter(m => m.type === 'file');
         
+        let html = '<div class="mt-3">';
+        
+        // Special case: Single video only (no images) - show inline video player
+        if (videos.length === 1 && images.length === 0) {
+            const video = videos[0];
+            const videoId = 'video-' + Math.random().toString(36).substr(2, 9);
+            const escapedUrl = escapeHtml(video.url);
+            const escapedFilename = escapeHtml(video.filename || 'Video');
+            
+            html += `
+                <div class="inline-video-player" data-video-id="${videoId}">
+                    <div class="video-container-inline">
+                        <video id="${videoId}" class="video-element-inline" preload="metadata">
+                            <source src="${escapedUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        
+                        <div class="play-overlay-inline" id="${videoId}-overlay">
+                            <button class="play-btn-inline">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="video-controls-inline" id="${videoId}-controls">
+                            <div class="progress-container-inline">
+                                <div class="progress-bar-wrapper-inline" id="${videoId}-progressBar">
+                                    <div class="progress-filled-inline" id="${videoId}-progress"></div>
+                                </div>
+                            </div>
+                            <div class="controls-row-inline">
+                                <button class="control-btn-inline" id="${videoId}-playPause" title="Play/Pause">
+                                    <i class="bi bi-play-fill" id="${videoId}-playIcon"></i>
+                                </button>
+                                <span class="time-display-inline">
+                                    <span id="${videoId}-currentTime">0:00</span> / <span id="${videoId}-duration">0:00</span>
+                                </span>
+                                <button class="control-btn-inline ms-auto" id="${videoId}-fullscreen" title="Fullscreen">
+                                    <i class="bi bi-fullscreen"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info-inline mt-2">
+                        <small class="text-muted"><i class="bi bi-film me-1"></i>${escapedFilename}</small>
+                    </div>
+                </div>
+            `;
+            
+            // Will initialize player after DOM insertion
+            setTimeout(() => initInlineVideoPlayer(videoId), 100);
+            
+            html += '</div>';
+            return html;
+        }
+        
         // Combine images and videos for gallery, sort by order (assume already sorted)
         const mediaItems = [
             ...images.map(m => ({ ...m, mediaType: 'image' })),
             ...videos.map(m => ({ ...m, mediaType: 'video' }))
         ];
-        
-        let html = '<div class="mt-3">';
         
         // Create thumbnail preview grid that opens gallery
         if (mediaItems.length > 0) {
@@ -356,6 +409,100 @@
             }
         }
     });
+    
+    // Initialize inline video player for single video cards
+    window.initInlineVideoPlayer = function(videoId) {
+        const video = document.getElementById(videoId);
+        if (!video) return;
+        
+        const overlay = document.getElementById(videoId + '-overlay');
+        const controls = document.getElementById(videoId + '-controls');
+        const playPauseBtn = document.getElementById(videoId + '-playPause');
+        const playIcon = document.getElementById(videoId + '-playIcon');
+        const progressBar = document.getElementById(videoId + '-progressBar');
+        const progress = document.getElementById(videoId + '-progress');
+        const currentTimeEl = document.getElementById(videoId + '-currentTime');
+        const durationEl = document.getElementById(videoId + '-duration');
+        const fullscreenBtn = document.getElementById(videoId + '-fullscreen');
+        const container = video.closest('.video-container-inline');
+        
+        // Format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Show duration when metadata loaded
+        video.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(video.duration);
+        });
+        
+        // Update progress
+        video.addEventListener('timeupdate', () => {
+            const percent = (video.currentTime / video.duration) * 100;
+            progress.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(video.currentTime);
+        });
+        
+        // Play/Pause toggle
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                playIcon.className = 'bi bi-pause-fill';
+                overlay.style.display = 'none';
+            } else {
+                video.pause();
+                playIcon.className = 'bi bi-play-fill';
+            }
+        }
+        
+        playPauseBtn.addEventListener('click', togglePlay);
+        overlay.addEventListener('click', togglePlay);
+        video.addEventListener('click', togglePlay);
+        
+        // Hover to autoplay
+        container.addEventListener('mouseenter', () => {
+            if (video.paused) {
+                video.play();
+                playIcon.className = 'bi bi-pause-fill';
+                overlay.style.display = 'none';
+            }
+        });
+        
+        // Progress bar seek
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            video.currentTime = percent * video.duration;
+        });
+        
+        // Fullscreen
+        fullscreenBtn.addEventListener('click', () => {
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            }
+        });
+        
+        // Show controls on hover
+        container.addEventListener('mouseenter', () => {
+            controls.style.opacity = '1';
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            if (!video.paused) {
+                controls.style.opacity = '0';
+            }
+        });
+        
+        // Video ended
+        video.addEventListener('ended', () => {
+            playIcon.className = 'bi bi-play-fill';
+            overlay.style.display = 'flex';
+        });
+    };
     
     // Load content when DOM is ready
     if (document.readyState === 'loading') {

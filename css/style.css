@@ -926,3 +926,148 @@ html {
 .gallery-main-media {
     animation: galleryFadeIn 0.3s ease;
 }
+
+/* ============ Inline Video Player for Single Video Cards ============ */
+.inline-video-player {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.video-container-inline {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.video-element-inline {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 400px;
+}
+
+.play-overlay-inline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.play-overlay-inline:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.play-btn-inline {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.play-btn-inline:hover {
+    transform: scale(1.1);
+    background: white;
+}
+
+.play-btn-inline i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-left: 4px;
+}
+
+.video-controls-inline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-container-inline:hover .video-controls-inline {
+    opacity: 1;
+}
+
+.progress-container-inline {
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-wrapper-inline {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+}
+
+.progress-filled-inline {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.1s linear;
+}
+
+.controls-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.control-btn-inline {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn-inline:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.time-display-inline {
+    color: white;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.video-info-inline {
+    padding: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+    .play-btn-inline {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .play-btn-inline i {
+        font-size: 1.5rem;
+    }
+}
