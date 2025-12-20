@@ -32,15 +32,9 @@
                 return;
             }
             
-            const contentSection = document.getElementById('content');
-            if (!contentSection) {
-                console.error('Content section not found');
-                return;
-            }
-            
             const container = document.getElementById('contentContainer');
             if (!container) {
-                console.error('Content container not found');
+                console.error('Content container not found. Make sure element with id="contentContainer" exists.');
                 return;
             }
             
