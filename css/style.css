@@ -808,6 +808,23 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+}
+
+.gallery-media-container:fullscreen {
+    max-width: none;
+    max-height: none;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+.gallery-media-container:-webkit-full-screen {
+    max-width: none;
+    max-height: none;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
 }
 
 .gallery-main-media {
@@ -822,42 +839,52 @@ html {
 video.gallery-main-media {
     width: 100%;
     height: auto;
+    background: #000;
 }
 
 video.gallery-main-media:fullscreen {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain;
     border-radius: 0;
 }
 
 video.gallery-main-media:-webkit-full-screen {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain;
     border-radius: 0;
 }
 
 video.gallery-main-media:-moz-full-screen {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain;
     border-radius: 0;
 }
 
 video.gallery-main-media:-ms-fullscreen {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain;
     border-radius: 0;
+}
+
+/* Fullscreen container for video parent */
+.gallery-media-container:fullscreen video,
+.gallery-media-container:-webkit-full-screen video {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
 }
 
 .gallery-nav-btn {
