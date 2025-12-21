@@ -63,7 +63,7 @@ body {
     background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
     color: white;
     position: relative;
-    padding: 4rem 0 8rem;
+    padding: 2rem 0 4rem;
     overflow: hidden;
 }
 
@@ -816,6 +816,36 @@ html {
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+}
+
+/* Ensure videos fill screen properly in fullscreen mode */
+video.gallery-main-media {
+    width: 100%;
+    height: auto;
+}
+
+video.gallery-main-media:fullscreen {
+    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
+}
+
+video.gallery-main-media:-webkit-full-screen {
+    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
+}
+
+video.gallery-main-media:-moz-full-screen {
+    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
+}
+
+video.gallery-main-media:-ms-fullscreen {
+    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
 }
 
 .gallery-nav-btn {

@@ -354,6 +354,9 @@
             lightboxVideo.style.display = 'block';
             lightboxVideoSource.src = media.url;
             lightboxVideo.load();
+            // Enable native fullscreen controls
+            lightboxVideo.setAttribute('controlsList', 'nodownload');
+            lightboxVideo.setAttribute('disablePictureInPicture', 'false');
         } else {
             lightboxVideo.style.display = 'none';
             lightboxImage.style.display = 'block';

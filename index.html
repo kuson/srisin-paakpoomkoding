@@ -34,11 +34,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#videos">
-                            <i class="bi bi-play-circle me-1"></i>Videos
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#content">
                             <i class="bi bi-journal-text me-1"></i>Stories
                         </a>
@@ -56,7 +51,7 @@
     <!-- Hero Section -->
     <section id="home" class="hero-section">
         <div class="container">
-            <div class="row align-items-center py-4">
+            <div class="row align-items-center py-2">
                 <div class="col-lg-8 mx-auto text-center">
                     <div class="hero-content">
                         <h1 class="display-4 fw-bold text-gradient mb-3">
@@ -72,101 +67,6 @@
                     d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
                     fill="#ffffff"></path>
             </svg>
-        </div>
-    </section>
-
-    <!-- Video Section -->
-    <section id="videos" class="py-5 bg-white">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold">
-                    <i class="bi bi-camera-video text-primary me-2"></i>Video Lessons
-                </h2>
-                <p class="text-muted">Teachin' on the MTV</p>
-            </div>
-
-            <!-- Video Player Container -->
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="video-player-wrapper">
-                        <!-- Video Player -->
-                        <div class="video-container">
-                            <video id="mainVideo" class="video-element" poster="assets/video-poster.jpg">
-                                <source src="videos/20251216_AppForKhunPoo.mov" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-
-                            <!-- Play Button Overlay -->
-                            <div class="play-overlay" id="playOverlay">
-                                <button class="play-btn-large" id="playBtnLarge">
-                                    <i class="bi bi-play-fill"></i>
-                                </button>
-                            </div>
-
-                            <!-- Video Controls -->
-                            <div class="video-controls" id="videoControls">
-                                <!-- Progress Bar -->
-                                <div class="progress-container">
-                                    <div class="progress-bar-wrapper" id="progressBar">
-                                        <div class="progress-buffered" id="buffered"></div>
-                                        <div class="progress-filled" id="progress"></div>
-                                        <div class="progress-thumb" id="progressThumb"></div>
-                                    </div>
-                                    <span class="time-display">
-                                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                                    </span>
-                                </div>
-
-                                <!-- Control Buttons -->
-                                <div class="controls-row">
-                                    <div class="controls-left">
-                                        <button class="control-btn" id="playPauseBtn" title="Play/Pause">
-                                            <i class="bi bi-play-fill" id="playPauseIcon"></i>
-                                        </button>
-                                        <button class="control-btn" id="skipBackBtn" title="Skip Back 10s">
-                                            <i class="bi bi-skip-backward-fill"></i>
-                                        </button>
-                                        <button class="control-btn" id="skipForwardBtn" title="Skip Forward 10s">
-                                            <i class="bi bi-skip-forward-fill"></i>
-                                        </button>
-                                        <div class="volume-control">
-                                            <button class="control-btn" id="muteBtn" title="Mute/Unmute">
-                                                <i class="bi bi-volume-up-fill" id="volumeIcon"></i>
-                                            </button>
-                                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1"
-                                                step="0.1" value="1">
-                                        </div>
-                                    </div>
-                                    <div class="controls-right">
-                                        <button class="control-btn" id="pipBtn" title="Picture in Picture">
-                                            <i class="bi bi-pip"></i>
-                                        </button>
-                                        <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
-                                            <i class="bi bi-fullscreen" id="fullscreenIcon"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Video Info -->
-                        <div class="video-info mt-3">
-                            <h5 class="video-title">
-                                <i class="bi bi-film me-2 text-primary"></i>App for Khun Poo - December 16, 2025
-                            </h5>
-                            <p class="video-description text-muted">
-                                A special video for our beloved family. Click play to watch!
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Video thumbnails removed - content managed through admin panel -->
-                        <!-- Additional videos managed through admin panel -->
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 
